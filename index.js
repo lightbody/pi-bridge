@@ -2,6 +2,7 @@ var bodyParser = require('body-parser');
 var express = require('express');
 var fs = require('fs');
 var https = require('https');
+var net = require('net');
 
 var app = express();
 
@@ -9,20 +10,34 @@ app.use(bodyParser.json());
 
 app.post('/', function(req, res) {
     console.log("Request!", req.body);
-    res.json({
-	  "version": "1.0",
-	  "response": {
-	    "outputSpeech": {
-	      "type": "PlainText",
-	      "text": "OK"
-	    },
-	    "card": null,
-	    "reprompt": null,
-	    "shouldEndSession": true
-	  },
-	  "sessionAttributes": {}
-	});   
+    sayOk(res);
 });
+
+var yamaha = function(cmd, res) {
+  var client = net.connect({host: "av.house", port: 50000}, function() { //'connect' listener
+    client.end(cmd + '\r\n', function() {
+        client.destroy();
+        sayOk(res);
+    });        
+  });
+}
+
+
+var sayOk = function(res) {
+  res.json({
+    "version": "1.0",
+    "response": {
+      "outputSpeech": {
+        "type": "PlainText",
+        "text": "OK"
+      },
+      "card": null,
+      "reprompt": null,
+      "shouldEndSession": true
+    },
+    "sessionAttributes": {}
+  });
+}
 
 var server = https.createServer({
     key: fs.readFileSync('./server.key'),
