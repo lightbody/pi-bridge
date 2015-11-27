@@ -9,8 +9,12 @@ var app = express();
 app.use(bodyParser.json());
 
 app.post('/', function(req, res) {
-    console.log("Request!", req.body);
-    sayOk(res);
+  var intent = req.body.request.intent.name;
+  if (intent == 'Mute') {
+    yamaha("@MAIN:MUTE=On", res);
+  } else if (intent == 'UnMute') {
+    yamaha("@MAIN:MUTE=Off", res);
+  }
 });
 
 var yamaha = function(cmd, res) {
