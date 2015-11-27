@@ -9,11 +9,19 @@ var app = express();
 app.use(bodyParser.json());
 
 app.post('/', function(req, res) {
+  console.log(req.body);
+  
   var intent = req.body.request.intent.name;
   if (intent == 'Mute') {
     yamaha("@MAIN:MUTE=On", res);
   } else if (intent == 'UnMute') {
     yamaha("@MAIN:MUTE=Off", res);
+  } else if (intent == 'WatchTV') {
+    yamaha("@MAIN:SCENE=Scene 2", res);
+  } else if (intent = 'WatchAppleTV') {
+    yamaha("@MAIN:SCENE=Scene 1", res);
+  } else if (intent = 'TurnOff') {
+    yamaha("@MAIN:PWR=Standby", res);
   }
 });
 
