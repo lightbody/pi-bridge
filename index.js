@@ -3,6 +3,7 @@ var express = require('express');
 var fs = require('fs');
 var https = require('https');
 var net = require('net');
+var exec = require('child_process').exec;
 
 var app = express();
 
@@ -21,7 +22,9 @@ app.post('/', function(req, res) {
   } else if (intent = 'WatchAppleTV') {
     yamaha("@MAIN:SCENE=Scene 1", res);
   } else if (intent = 'TurnOff') {
-    yamaha("@MAIN:PWR=Standby", res);
+    cec(function() {
+      yamaha("@MAIN:PWR=Standby", res);
+    });
   }
 });
 
@@ -31,6 +34,16 @@ var yamaha = function(cmd, res) {
         client.destroy();
         sayOk(res);
     });        
+  });
+}
+
+var cec = function(cmd, callback) {
+  exec("echo \" + cmd + \" | cec-client -s", function(err, stdout, stderr) {
+    console.log(err);
+    console.log(stdout);
+    console.log(stderr);
+    
+    callback();
   });
 }
 
